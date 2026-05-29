@@ -12,6 +12,7 @@ This is where ebitenplus comes in.
 - 2D Camera (camera that can translate game world sprites relative to it's position)
 - Basic scene architecture
 - Vec and Rect structs (like the STL image.Point and image.Rectangle but adapted with float64 coordinates)
+- Better API for text rendering with the Printer struct
 
 **(Planned)**
 

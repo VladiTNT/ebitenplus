@@ -5,6 +5,7 @@ import (
 	"io/fs"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 // AssetLoader makes loading assets easier by centralizing error handling logic for io and decoding
@@ -85,4 +86,22 @@ func (al *AssetLoader) LoadRawAudio(name string, enc AudioEncoding) RawAudio {
 	}
 
 	return audioBytes
+}
+
+// LoadFont loads a raw font file and returns a *text.GoTextFaceSource to use with text printing tools.
+func (al *AssetLoader) LoadFont(name string) *text.GoTextFaceSource {
+	f, err := al.FileSystem.Open(name)
+	if err != nil {
+		al.ErrFunc(err)
+		return nil
+	}
+	defer f.Close()
+
+	src, err := text.NewGoTextFaceSource(f)
+	if err != nil {
+		al.ErrFunc(err)
+		return nil
+	}
+
+	return src
 }
