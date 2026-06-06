@@ -15,6 +15,11 @@ type Vec struct {
 	X, Y float64
 }
 
+// Ivec returns a Vec from the given ints.
+func Ivec(x, y int) Vec {
+	return Vec{float64(x), float64(y)}
+}
+
 // Vvec is a shorthand for Vec{x, y}.
 func Vvec(x, y float64) Vec {
 	return Vec{x, y}

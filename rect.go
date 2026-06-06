@@ -6,9 +6,18 @@ type Rect struct {
 	Min, Max Vec
 }
 
-// Rrect makes a Rect.
+// Rrect makes a Rect. Will panic if given invalid values.
 func Rrect(x0, y0, x1, y1 float64) Rect {
-	return Rect{Vvec(x0, y0), Vvec(x1, y1)}
+	v0 := Vvec(x0, y0)
+	v1 := Vvec(x1, y1)
+
+	x, y := v1.Sub(v0).Coords()
+
+	if x < 0 && y < 0 {
+		panic("cannot make Rect with invalid values")
+	}
+
+	return Rect{v0, v1}
 }
 
 // String returns a string representation of r.

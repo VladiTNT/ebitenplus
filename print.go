@@ -68,3 +68,12 @@ func (pp *Printer) PrintCol(screen *ebiten.Image, str string, pos Vec, col color
 
 	pp.PrintWithOpts(screen, str, op)
 }
+
+// PrintSize prints the string but it over rides the size values.
+func (pp *Printer) PrintSize(screen *ebiten.Image, str string, pos Vec, fontSize float64) {
+	op := new(text.DrawOptions)
+	op.LineSpacing = pp.LineSpacingMultiplier * fontSize
+	op.GeoM.Translate(pos.Coords())
+
+	PrintString(screen, str, pp.Font, pp.Direction, fontSize, pp.Lang, op)
+}
