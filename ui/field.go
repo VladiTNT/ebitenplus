@@ -34,7 +34,7 @@ func NewField(box ebitenplus.Rect) *Field {
 	}
 }
 
-// Update update's the field's proprieties with the given cursor position and mouse button.
+// Update update's the field's properties with the given cursor position and mouse button.
 func (f *Field) Update(cursor ebitenplus.Vec, m ebiten.MouseButton) {
 	// Check if button is hovered
 	if cursor.In(f.Box) {

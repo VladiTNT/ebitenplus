@@ -1,6 +1,7 @@
 package ebitenplus
 
 import (
+	"math"
 	"strconv"
 )
 
@@ -63,4 +64,19 @@ func (v Vec) Mul(k float64) Vec {
 // Sub returns the vector v-q.
 func (v Vec) Sub(q Vec) Vec {
 	return Vvec(v.X-q.X, v.Y-q.Y)
+}
+
+// Returns the absolute value of the vector.
+func (v Vec) Abs() Vec {
+	return Vvec(math.Abs(v.X), math.Abs(v.Y))
+}
+
+// Returns true if v > q (at least one of it's coords is larger).
+func (v Vec) IsGreater(q Vec) bool {
+	x, y := v.Sub(q).Coords()
+	if x > 0 || y > 0 {
+		return true
+	} else {
+		return false
+	}
 }
