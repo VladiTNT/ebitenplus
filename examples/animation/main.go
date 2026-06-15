@@ -1,18 +1,19 @@
 package main
 
 import (
+	"time"
+
 	"github.com/VladiTNT/ebitenplus"
-	"github.com/VladiTNT/ebitenplus/ui"
+	"github.com/VladiTNT/ebitenplus/internal"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type Game struct {
-	W *ui.Window
+	A *ebitenplus.Animation
 }
 
 func (g *Game) Update() error {
-	g.W.Update(ebitenplus.Ivec(ebiten.CursorPosition()), ebiten.MouseButton0)
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		return ebiten.Termination
@@ -22,7 +23,10 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.W.Draw(screen, 2, ui.LIGHT_GRAY, ui.GRAY)
+	op := new(ebiten.DrawImageOptions)
+	op.GeoM.Scale(2, 2)
+	op.GeoM.Translate(60, 60)
+	screen.DrawImage(g.A.Play(), op)
 }
 
 func (g *Game) Layout(w, h int) (int, int) {
@@ -31,9 +35,10 @@ func (g *Game) Layout(w, h int) (int, int) {
 
 func main() {
 	g := new(Game)
-	g.W = ui.NewWindow(ebitenplus.Rrect(20, 20, 120, 120))
+	al := ebitenplus.NewAssetLoader(internal.TestAssets, func(err error) { panic(err) })
+	g.A = ebitenplus.NewAnimation(100*time.Millisecond, al.LoadSpriteSheet("assets/SpriteSheet.png", 16, 16, 16, 4))
 
-	ebiten.SetWindowTitle("Window example")
+	ebiten.SetWindowTitle("Animation example")
 	ebiten.SetWindowSize(640, 480)
 	if err := ebiten.RunGame(g); err != nil {
 		panic(err)

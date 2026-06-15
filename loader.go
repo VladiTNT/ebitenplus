@@ -105,3 +105,9 @@ func (al *AssetLoader) LoadFont(name string) *text.GoTextFaceSource {
 
 	return src
 }
+
+// LoadSpriteSheet loads a sprite sheet and returns it as an array of the sprites it contains, see more info with
+// the ParseSpriteSheet function.
+func (al *AssetLoader) LoadSpriteSheet(name string, spN, spLen, spHeight, sheetWidth int) []*ebiten.Image {
+	return ParseSpriteSheet(al.LoadImage(name), spN, spLen, spHeight, sheetWidth)
+}
