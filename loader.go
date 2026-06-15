@@ -111,3 +111,32 @@ func (al *AssetLoader) LoadFont(name string) *text.GoTextFaceSource {
 func (al *AssetLoader) LoadSpriteSheet(name string, spN, spLen, spHeight, sheetWidth int) []*ebiten.Image {
 	return ParseSpriteSheet(al.LoadImage(name), spN, spLen, spHeight, sheetWidth)
 }
+
+// LoadBytes loads the file and returns it's contents as a byte array, very simple.
+func (al *AssetLoader) LoadBytes(name string) []byte {
+	f, err := al.FileSystem.Open(name)
+	if err != nil {
+		al.ErrFunc(err)
+		return nil
+	}
+	defer f.Close()
+
+	b, err := io.ReadAll(f)
+	if err != nil {
+		al.ErrFunc(err)
+		return nil
+	}
+
+	return b
+}
+
+// LoadBytes loads and compiles the shader.
+func (al *AssetLoader) LoadShader(name string) *ebiten.Shader {
+	shader, err := ebiten.NewShader(al.LoadBytes(name))
+	if err != nil {
+		al.ErrFunc(err)
+		return nil
+	}
+
+	return shader
+}

@@ -1,4 +1,4 @@
-package ui
+package ebitenplus
 
 import "image/color"
 

@@ -13,10 +13,9 @@ This is where ebitenplus comes in.
 - Basic scene architecture
 - Vec and Rect structs (like the STL image.Point and image.Rectangle but adapted with float64 coordinates)
 - Better API for text rendering with the Printer struct
+- Basic ui components
 
 **(Planned)**
-
-- UI framework
 
 ## Project walkthrough:
 
@@ -24,8 +23,13 @@ This is where ebitenplus comes in.
 
 - *examples* (examples for how you should use the library)
 - *internal* (for now just test assets)
-- *ui* (a ui framework, not done yet)
 
 ## Who is this for?
 
 Anyone who wants to make games with ebitengine and doesn't want to make these basic systems from scratch everytime (mostly myself, lol).
+
+## TODO:
+
+- Add better defaults to the asset loader so that it doesn't just return nil and crash the game
+- Make a window that can use a sprite template for it's edges
+- Make more ui components (button, radio, slider) 

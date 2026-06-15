@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/VladiTNT/ebitenplus"
 	"github.com/VladiTNT/ebitenplus/internal"
-	"github.com/VladiTNT/ebitenplus/ui"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -35,11 +34,11 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.Printer.Print(screen, "Hello!!!", ebitenplus.Vvec(0, 0))
-	g.Printer.PrintCol(screen, "You are a nerd!!!", ebitenplus.Vvec(0, 24), ui.GREEN)
+	g.Printer.PrintCol(screen, "You are a nerd!!!", ebitenplus.Vvec(0, 24), ebitenplus.GREEN)
 
 	op := new(text.DrawOptions)
 	op.GeoM.Translate(0, 48)
-	op.ColorScale.ScaleWithColor(ui.RED)
+	op.ColorScale.ScaleWithColor(ebitenplus.RED)
 
 	ebitenplus.PrintString(
 		screen,

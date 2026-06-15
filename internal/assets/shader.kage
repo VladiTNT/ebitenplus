@@ -1,0 +1,11 @@
+//kage:unit pixels
+package main
+
+// Uniform variables
+var Time float
+var Cursor vec2
+
+func Fragment(dstPos vec4, srcPos vec2, color vec4) vec4 {
+    originColor := imageSrc0At(srcPos)
+    return vec4(1.0 - originColor.rgb, originColor.a)
+}

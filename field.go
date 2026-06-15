@@ -1,9 +1,8 @@
-package ui
+package ebitenplus
 
 import (
 	"image/color"
 
-	"github.com/VladiTNT/ebitenplus"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -13,7 +12,7 @@ import (
 // It is meant as a base for other UI components. It's more or less just a boring button.
 type Field struct {
 	// Box is the space in which the field checks for input.
-	Box ebitenplus.Rect
+	Box Rect
 
 	// IsHover will be true when the mouse is hovering over the button.
 	IsHover bool
@@ -24,7 +23,7 @@ type Field struct {
 }
 
 // NewField is a constructor. It makes a field in the given space.
-func NewField(box ebitenplus.Rect) *Field {
+func NewField(box Rect) *Field {
 	return &Field{
 		Box: box,
 
@@ -35,7 +34,7 @@ func NewField(box ebitenplus.Rect) *Field {
 }
 
 // Update update's the field's properties with the given cursor position and mouse button.
-func (f *Field) Update(cursor ebitenplus.Vec, m ebiten.MouseButton) {
+func (f *Field) Update(cursor Vec, m ebiten.MouseButton) {
 	// Check if button is hovered
 	if cursor.In(f.Box) {
 		f.IsHover = true
