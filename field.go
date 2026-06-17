@@ -66,7 +66,7 @@ func (f *Field) Update(cursor Vec, m ebiten.MouseButton) {
 
 // DrawRect is mostly a debug method. It draws the field's box with the given values.
 func (f *Field) DrawRect(screen *ebiten.Image, width float32, outline, fill color.Color) {
-	x, y, w, h := float32(f.Box.Min.X), float32(f.Box.Min.Y), float32(f.Box.Width()), float32(f.Box.Height())
+	x, y, w, h := float32(f.Box.X), float32(f.Box.Y), float32(f.Box.W), float32(f.Box.H)
 
 	vector.FillRect(screen, x, y, w, h, fill, false)
 	vector.StrokeRect(screen, x, y, w, h, width, outline, false)

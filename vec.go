@@ -53,7 +53,7 @@ func (v Vec) Eq(q Vec) bool {
 
 // In reports whether v is in r.
 func (v Vec) In(r Rect) bool {
-	return v.X >= r.Min.X && v.X <= r.Max.X && v.Y >= r.Min.Y && v.Y <= r.Max.Y
+	return v.X >= r.X && v.X <= r.MaxX() && v.Y >= r.Y && v.Y <= r.MaxY()
 }
 
 // Mul returns the vector v*k.
@@ -69,14 +69,4 @@ func (v Vec) Sub(q Vec) Vec {
 // Returns the absolute value of the vector.
 func (v Vec) Abs() Vec {
 	return Vvec(math.Abs(v.X), math.Abs(v.Y))
-}
-
-// Returns true if v > q (at least one of it's coords is larger).
-func (v Vec) IsGreater(q Vec) bool {
-	x, y := v.Sub(q).Coords()
-	if x > 0 || y > 0 {
-		return true
-	} else {
-		return false
-	}
 }

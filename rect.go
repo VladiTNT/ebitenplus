@@ -1,72 +1,87 @@
 package ebitenplus
 
-// Rect is a rectangle with Min as the top left corner and Max as the bottom right corner.
-// It's the same as the standard image.Rectangle but with float64 values.
+import (
+	"fmt"
+	"math"
+)
+
+// Rect is a rectangle with the point defined by X and Y as it's top left corner and W and H as it's width and height.
 type Rect struct {
-	Min, Max Vec
+	X, Y, W, H float64
 }
 
-// Rrect makes a Rect. Will panic if given invalid values.
-func Rrect(x0, y0, x1, y1 float64) Rect {
-	v0 := Vvec(x0, y0)
-	v1 := Vvec(x1, y1)
-
-	x, y := v1.Sub(v0).Coords()
-
-	if x < 0 && y < 0 {
-		panic("cannot make Rect with invalid values")
-	}
-
-	return Rect{v0, v1}
+// Rrect makes a rect with the given values.
+func Rrect(x, y, w, h float64) Rect {
+	return Rect{x, y, w, h}
 }
 
-// String returns a string representation of r.
+// Vrect makes a rect with the given vector and width and height values.
+func Vrect(pos Vec, w, h float64) Rect {
+	return Rect{pos.X, pos.Y, w, h}
+}
+
+// Returns a string representation of r like "(20, 30) - W: 10 - H: 20".
 func (r Rect) String() string {
-	return r.Min.String() + "-" + r.Max.String()
-}
-
-// Width returns r's width.
-func (r Rect) Width() float64 {
-	return r.Max.X - r.Min.X
-}
-
-// Height returns r's height.
-func (r Rect) Height() float64 {
-	return r.Max.Y - r.Min.Y
+	return fmt.Sprintf("(%f, %f) - W: %f - H: %f", r.X, r.Y, r.W, r.H)
 }
 
 // Size returns r's width and height as a Vec.
 func (r Rect) Size() Vec {
-	return Vvec(r.Width(), r.Height())
+	return Vvec(r.W, r.H)
 }
 
-// Add returns the r translated by v.
+// MaxX returns r.X + r.W
+func (r Rect) MaxX() float64 {
+	return r.X + r.W
+}
+
+// MaxY returns r.Y + r.H
+func (r Rect) MaxY() float64 {
+	return r.Y + r.H
+}
+
+// Max returns the bottom right corner as a Vec.
+func (r Rect) Max() Vec {
+	return Vvec(r.MaxX(), r.MaxY())
+}
+
+// Empty reports whether there are any points inside of r.
+func (r Rect) Empty() bool {
+	return r.W <= 0 || r.H <= 0
+}
+
+// Eq reports if the rect's are equal.
+func (r Rect) Eq(s Rect) bool {
+	return r == s || r.Empty() && s.Empty()
+}
+
+// Add translates r's base position by v.
 func (r Rect) Add(v Vec) Rect {
-	return Rrect(r.Min.X+v.X, r.Min.Y+v.Y, r.Max.X+v.X, r.Max.Y+v.Y)
+	return Rrect(r.X+v.X, r.Y+v.Y, r.W, r.H)
 }
 
-// Sub returns the rectangle r translated -v.
+// Sub subtracts v out of r's base position
 func (r Rect) Sub(v Vec) Rect {
-	return Rrect(r.Min.X-v.X, r.Min.Y-v.Y, r.Max.X-v.X, r.Max.Y-v.Y)
+	return Rrect(r.X-v.X, r.Y-v.Y, r.W, r.H)
 }
 
 // Inset returns the rectangle r inset by n, which may be negative. If either
 // of r's dimensions is less than 2*n then an empty rectangle near the center
 // of r will be returned.
-func (r Rect) Inset(f float64) Rect {
-	if r.Width() < 2*f {
-		r.Min.X = (r.Min.X + r.Max.X) / 2
-		r.Max.X = r.Min.X
+func (r Rect) Inset(n float64) Rect {
+	if r.W < 2*n {
+		r.X += r.W / 2
+		r.W = 0
 	} else {
-		r.Min.X += f
-		r.Max.X -= f
+		r.X += n
+		r.W -= 2 * n
 	}
-	if r.Height() < 2*f {
-		r.Min.Y = (r.Min.Y + r.Max.Y) / 2
-		r.Max.Y = r.Min.Y
+	if r.H < 2*n {
+		r.Y += r.H / 2
+		r.H = 0
 	} else {
-		r.Min.Y += f
-		r.Max.Y -= f
+		r.Y += n
+		r.H -= 2 * n
 	}
 	return r
 }
@@ -74,26 +89,17 @@ func (r Rect) Inset(f float64) Rect {
 // Intersect returns the largest rectangle contained by both r and s. If the
 // two rectangles do not overlap then the zero rectangle will be returned.
 func (r Rect) Intersect(s Rect) Rect {
-	if r.Min.X < s.Min.X {
-		r.Min.X = s.Min.X
-	}
-	if r.Min.Y < s.Min.Y {
-		r.Min.Y = s.Min.Y
-	}
-	if r.Max.X > s.Max.X {
-		r.Max.X = s.Max.X
-	}
-	if r.Max.Y > s.Max.Y {
-		r.Max.Y = s.Max.Y
-	}
-	// Letting r0 and s0 be the values of r and s at the time that the method
-	// is called, this next line is equivalent to:
-	//
-	// if max(r0.Min.X, s0.Min.X) >= min(r0.Max.X, s0.Max.X) || likewiseForY { etc }
-	if r.Empty() {
+	minX := max(r.X, s.X)
+	minY := max(r.Y, s.Y)
+	maxX := min(r.X+r.W, s.X+s.W)
+	maxY := min(r.Y+r.H, s.Y+s.H)
+
+	// If the intersection is valid
+	if minX >= maxX || minY >= maxY {
 		return Rect{}
 	}
-	return r
+
+	return Rrect(minX, minY, maxX-minX, maxY-minY)
 }
 
 // Union returns the smallest rectangle that contains both r and s.
@@ -104,58 +110,33 @@ func (r Rect) Union(s Rect) Rect {
 	if s.Empty() {
 		return r
 	}
-	if r.Min.X > s.Min.X {
-		r.Min.X = s.Min.X
-	}
-	if r.Min.Y > s.Min.Y {
-		r.Min.Y = s.Min.Y
-	}
-	if r.Max.X < s.Max.X {
-		r.Max.X = s.Max.X
-	}
-	if r.Max.Y < s.Max.Y {
-		r.Max.Y = s.Max.Y
-	}
-	return r
-}
 
-// Empty reports whether the rectangle contains no points.
-func (r Rect) Empty() bool {
-	return r.Min.X >= r.Max.X || r.Min.Y >= r.Max.Y
-}
+	minX := min(r.X, s.X)
+	minY := min(r.Y, s.Y)
+	maxX := max(r.X+r.W, s.X+s.W)
+	maxY := max(r.Y+r.H, s.Y+s.H)
 
-// Eq reports whether r and s contain the same set of points. All empty
-// rectangles are considered equal.
-func (r Rect) Eq(s Rect) bool {
-	return r == s || r.Empty() && s.Empty()
+	return Rrect(minX, minY, maxX-minX, maxY-minY)
 }
 
 // Overlaps reports whether r and s have a non-empty intersection.
 func (r Rect) Overlaps(s Rect) bool {
 	return !r.Empty() && !s.Empty() &&
-		r.Min.X < s.Max.X && s.Min.X < r.Max.X &&
-		r.Min.Y < s.Max.Y && s.Min.Y < r.Max.Y
+		r.X < s.MaxX() && s.X < r.MaxX() &&
+		r.Y < s.MaxY() && s.Y < r.MaxY()
 }
 
 // In reports whether every point in r is in s.
 func (r Rect) In(s Rect) bool {
 	if r.Empty() {
-		return true
+		return false
 	}
-	// Note that r.Max is an exclusive bound for r, so that r.In(s)
-	// does not require that r.Max.In(s).
-	return s.Min.X <= r.Min.X && r.Max.X <= s.Max.X &&
-		s.Min.Y <= r.Min.Y && r.Max.Y <= s.Max.Y
+
+	return s.X <= r.X && r.MaxX() <= s.MaxX() &&
+		s.Y <= r.Y && r.MaxY() <= s.MaxY()
 }
 
-// Canon returns the canonical version of r. The returned rectangle has minimum
-// and maximum coordinates swapped if necessary so that it is well-formed.
+// Canon returns r but with the absolute values of r.W and r.H.
 func (r Rect) Canon() Rect {
-	if r.Max.X < r.Min.X {
-		r.Min.X, r.Max.X = r.Max.X, r.Min.X
-	}
-	if r.Max.Y < r.Min.Y {
-		r.Min.Y, r.Max.Y = r.Max.Y, r.Min.Y
-	}
-	return r
+	return Rrect(r.X, r.Y, math.Abs(r.W), math.Abs(r.H))
 }
